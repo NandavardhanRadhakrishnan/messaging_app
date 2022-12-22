@@ -1,5 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:messaging_app/userModel.dart';
+import 'package:messaging_app/models/userModel.dart';
 
 class Chat {
   Users sender;
