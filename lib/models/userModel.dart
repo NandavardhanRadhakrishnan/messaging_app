@@ -1,6 +1,6 @@
 class Users{
   String uid;
-  String nickName;
+  String? nickName;
 
-  Users({required this.uid,required this.nickName});
+  Users({required this.uid, this.nickName});
 }
