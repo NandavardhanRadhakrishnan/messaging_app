@@ -1,5 +1,5 @@
 # messaging app
 
-WIP
-a simple messaging app
+WIP <br>
+a simple messaging app.
 currently using firebase
