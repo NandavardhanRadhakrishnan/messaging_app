@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:messaging_app/screens/AuthenticateScreen.dart';
+import 'package:messaging_app/screens/HomeScreen.dart';
+import 'package:provider/provider.dart';
+import 'models/userModel.dart';
 
-class Wrapper extends StatefulWidget {
+class Wrapper extends StatelessWidget {
   const Wrapper({Key? key}) : super(key: key);
 
   @override
-  State<Wrapper> createState() => _WrapperState();
-}
-
-class _WrapperState extends State<Wrapper> {
-  @override
   Widget build(BuildContext context) {
-    return Home();
+    // return home or authenticate widget
+
+    final user = Provider.of<Users?>(context);
+    if (user == null) {
+      return Authenticate();
+    } else {
+      return Home();
+    }
   }
 }
