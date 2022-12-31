@@ -1,11 +1,21 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:messaging_app/models/userModel.dart';
 
 class Chat {
-  Users sender;
-  Users reciver;
+  String senderUid;
+  String receiverUid;
   String message;
-  int? timestamp;
+  int timestamp;
 
-  Chat({required this.sender,required this.reciver,required this.message,int? timestamp})
-  : this.timestamp = DateTime.now().millisecondsSinceEpoch;
+  Chat({required this.senderUid,required this.receiverUid,required this.message,required this.timestamp});
+
+  Map<String,dynamic> toMap(){
+    return{
+      'senderUid':senderUid,
+      'receiverUid':receiverUid,
+      'message':message,
+      'timestamp':timestamp
+    };
+  }
+
 }

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/screens/AuthenticateScreen.dart';
 import 'package:messaging_app/screens/HomeScreen.dart';
@@ -11,7 +12,7 @@ class Wrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     // return home or authenticate widget
 
-    final user = Provider.of<Users?>(context);
+    final user = Provider.of<User?>(context);
     if (user == null) {
       return Authenticate();
     } else {

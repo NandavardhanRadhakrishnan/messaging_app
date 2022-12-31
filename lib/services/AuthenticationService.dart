@@ -9,13 +9,8 @@ class AuthService {
   // final FirebaseAuth _auth = FirebaseAuth.instanceFor(app: fApp);
 
   //auth change user stream
-  Stream<Users?> get user {
-    return _auth.authStateChanges().map(_userFromCredUser);
-  }
-
-  //Firebase user to User_
-  Users? _userFromCredUser(User? user) {
-    return user != null ? Users(uid: user.uid) : null;
+  Stream<User?> get user {
+    return _auth.authStateChanges();
   }
 
   //sign in anon
@@ -35,7 +30,7 @@ class AuthService {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       User? user = result.user;
-      return _userFromCredUser(user);
+      return user;
     } catch (e) {
       print(e.toString());
       return null;
@@ -49,9 +44,9 @@ class AuthService {
       User? user = result.user;
 
       //create a new document for the user with uid
-      await Database(uid:user?.uid).updateUserData('');
+      await Database(uid:user!.uid).updateUserData('');
 
-      return _userFromCredUser(user);
+      return user;
     } catch (e) {
       print(e.toString());
       return null;
