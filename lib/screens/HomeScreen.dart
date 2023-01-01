@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/Shared/constants.dart';
+import 'package:messaging_app/Shared/loadingScreen.dart';
 import 'package:messaging_app/models/userModel.dart';
+import 'package:messaging_app/screens/ChatScreen.dart';
 import 'package:messaging_app/screens/ProfileScreen.dart';
 import 'package:messaging_app/screens/UsersScreen.dart';
 import 'package:messaging_app/services/AuthenticationService.dart';
@@ -28,59 +30,116 @@ class _HomeState extends State<Home> {
           if (snapshot.hasData) {
             Users? user = snapshot.data;
             return Scaffold(
-              appBar: AppBar(
-                backgroundColor: Colors.grey[900],
-                title: Text(
-                  "Chat",
-                  style: TextStyle(color: Colors.white),
-                ),
-                actions: [
-                  TextButton.icon(
-                    onPressed: () {
-                      _auth.signOut();
-                    },
-                    icon: Icon(Icons.person),
-                    label: Text("Sign Out"),
-                    style: buttonStyle,
+                appBar: AppBar(
+                  backgroundColor: Colors.grey[900],
+                  title: Text(
+                    "Chat",
+                    style: TextStyle(color: Colors.white),
                   ),
-                ],
-              ),
-              drawer: Drawer(
-                backgroundColor: Colors.grey[900],
-                child: ListView(
-                  children: [
-                    UserAccountsDrawerHeader(
-                      decoration: BoxDecoration(color: Colors.grey[700]),
-                      accountName: Text(user?.nickName ?? "set your name" , style: TextStyle(fontSize: 22),),
-                      accountEmail: null,
-                    ),
-                    ListTile(
-                      leading: Icon(
-                        Icons.person,
-                        color: Colors.white,
-                      ),
-                      title: Text(
-                        "Profile",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) => Profile(user: user!),
-                        );
+                  actions: [
+                    TextButton.icon(
+                      onPressed: () {
+                        _auth.signOut();
                       },
-                    )
+                      icon: Icon(Icons.person),
+                      label: Text("Sign Out"),
+                      style: buttonStyle,
+                    ),
                   ],
                 ),
-              ),
-              floatingActionButton: FloatingActionButton(
-                child: Icon(Icons.chat),
-                onPressed: (){
-                  showDialog(context: context, builder: (_)=>UsersList(user: user!));
-                },
-              ),
-              body: Container(),
-            );
+                drawer: Drawer(
+                  backgroundColor: Colors.grey[900],
+                  child: ListView(
+                    children: [
+                      UserAccountsDrawerHeader(
+                        decoration: BoxDecoration(color: Colors.grey[700]),
+                        accountName: Text(
+                          user?.nickName ?? "set your name",
+                          style: TextStyle(fontSize: 22),
+                        ),
+                        accountEmail: null,
+                      ),
+                      ListTile(
+                        leading: Icon(
+                          Icons.person,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          "Profile",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => Profile(user: user!),
+                          );
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                floatingActionButton: FloatingActionButton(
+                  child: Icon(Icons.chat),
+                  backgroundColor: Colors.grey[800],
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (_) => UsersList(user: user!));
+                  },
+                ),
+                body: FutureBuilder<List>(
+                    future: db.getUsersWhoChatWithUid(),
+                    initialData: [],
+                    builder: ((context, snapshot) {
+                      return snapshot.hasData
+                          ? Container(
+                              color: Colors.grey[850],
+                              child: ListView.builder(
+                                itemCount: snapshot.data?.length,
+                                itemBuilder: (context, index) {
+                                  Users item = snapshot.data![index];
+                                  return Column(
+                                    children: [
+                                      Divider(
+                                        color: Colors.white,
+                                        height: 2,
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      ListTile(
+                                        textColor: Colors.black,
+                                        title: Text(
+                                          item.nickName!,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        ),
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ChatUser(
+                                                        user: user!,
+                                                        otherUser: item,
+                                                      )));
+                                        },
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Divider(
+                                        color: Colors.white,
+                                        height: 2,
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                            )
+                          : Loading();
+                    })));
           } else {
             return Container();
           }

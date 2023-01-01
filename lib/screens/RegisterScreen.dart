@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:messaging_app/Shared/constants.dart';
+import 'package:messaging_app/models/userModel.dart';
+import 'package:messaging_app/screens/ProfileScreen.dart';
+import 'package:messaging_app/screens/ReminderPopup.dart';
 import 'package:messaging_app/services/AuthenticationService.dart';
 
 class Register extends StatefulWidget {
@@ -19,12 +22,11 @@ class _RegisterState extends State<Register> {
   bool loading = true;
   final AuthService _auth = AuthService();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[800],
+        backgroundColor: Colors.grey[900],
         title: Text("Register"),
         actions: [
           TextButton.icon(
@@ -38,7 +40,7 @@ class _RegisterState extends State<Register> {
         ],
       ),
       body: Container(
-          color: Colors.grey[900],
+          color: Colors.grey[850],
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
           child: Form(
             key: _formKey,
@@ -62,8 +64,10 @@ class _RegisterState extends State<Register> {
                 ),
                 TextFormField(
                   style: TextStyle(color: Colors.white),
-                  decoration: textInputDecoration.copyWith(hintText: "Password"),
-                  validator: (val) => val!.length < 6 ? "Enter a password 6+ long" : null,
+                  decoration:
+                      textInputDecoration.copyWith(hintText: "Password"),
+                  validator: (val) =>
+                      val!.length < 6 ? "Enter a password 6+ long" : null,
                   obscureText: true,
                   onChanged: (val) {
                     setState(() {
@@ -75,13 +79,16 @@ class _RegisterState extends State<Register> {
                   height: 20,
                 ),
                 ElevatedButton(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey[800])),
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.grey[800])),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       setState(() {
                         loading = true;
                       });
-                      dynamic result = await _auth.registerWithEmailAndPassword(email, password);
+                      dynamic result = await _auth.registerWithEmailAndPassword(
+                          email, password);
                       if (result == null) {
                         setState(() {
                           loading = false;
@@ -89,6 +96,8 @@ class _RegisterState extends State<Register> {
                         });
                       }
                     }
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => SetNickNamePopUp()));
                   },
                   child: Text(
                     "Register",

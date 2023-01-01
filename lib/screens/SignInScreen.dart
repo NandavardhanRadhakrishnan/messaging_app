@@ -23,7 +23,7 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[800],
+        backgroundColor: Colors.grey[900],
         title: Text("Sign In"),
         actions: [
           TextButton.icon(
@@ -37,7 +37,7 @@ class _SignInState extends State<SignIn> {
         ],
       ),
       body: Container(
-          color: Colors.grey[900],
+          color: Colors.grey[850],
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
           child: Form(
             key: _formKey,
@@ -61,8 +61,10 @@ class _SignInState extends State<SignIn> {
                 ),
                 TextFormField(
                   style: TextStyle(color: Colors.white),
-                  decoration: textInputDecoration.copyWith(hintText: "Password"),
-                  validator: (val) => val!.length < 6 ? "Enter a password 6+ long" : null,
+                  decoration:
+                      textInputDecoration.copyWith(hintText: "Password"),
+                  validator: (val) =>
+                      val!.length < 6 ? "Enter a password 6+ long" : null,
                   obscureText: true,
                   onChanged: (val) {
                     setState(() {
@@ -74,13 +76,16 @@ class _SignInState extends State<SignIn> {
                   height: 20,
                 ),
                 ElevatedButton(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey[800])),
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.grey[800])),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       setState(() {
                         loading = true;
                       });
-                      dynamic result = await _auth.signInWithEmailAndPassword(email, password);
+                      dynamic result = await _auth.signInWithEmailAndPassword(
+                          email, password);
                       if (result == null) {
                         setState(() {
                           loading = false;

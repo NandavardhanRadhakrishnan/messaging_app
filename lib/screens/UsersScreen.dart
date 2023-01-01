@@ -31,8 +31,8 @@ class _UsersListState extends State<UsersList> {
                 return snapshot.hasData
                     ? ListView.builder(
                         itemCount: snapshot.data?.length,
-                        itemBuilder: (_, int position) {
-                          final item = snapshot.data![position];
+                        itemBuilder: (context, int index) {
+                          final item = snapshot.data![index];
                           return Card(
                             color: Colors.grey[900],
                             child: ListTile(
@@ -40,9 +40,15 @@ class _UsersListState extends State<UsersList> {
                                 item.nickName,
                                 style: TextStyle(color: Colors.white),
                               ),
-                              onTap: (){
+                              onTap: () {
                                 Navigator.pop(context);
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatUser(user: widget.user,otherUser: item,)));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ChatUser(
+                                              user: widget.user,
+                                              otherUser: item,
+                                            )));
                               },
                             ),
                           );
