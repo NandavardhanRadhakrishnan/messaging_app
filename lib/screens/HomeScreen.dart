@@ -87,8 +87,8 @@ class _HomeState extends State<Home> {
                         builder: (_) => UsersList(user: user!));
                   },
                 ),
-                body: FutureBuilder<List>(
-                    future: db.getUsersWhoChatWithUid(),
+                body: StreamBuilder<List>(
+                    stream: db.getUsersWhoChatWithUid(),
                     initialData: [],
                     builder: ((context, snapshot) {
                       return snapshot.hasData

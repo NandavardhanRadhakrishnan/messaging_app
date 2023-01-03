@@ -24,8 +24,8 @@ class _UsersListState extends State<UsersList> {
         height: 600,
         child: Padding(
             padding: EdgeInsets.all(12),
-            child: FutureBuilder<List>(
-              future: db.getAllUsers(),
+            child: StreamBuilder<List>(
+              stream: db.getAllUsers(),
               initialData: [],
               builder: (context, snapshot) {
                 return snapshot.hasData

@@ -35,15 +35,16 @@ class Database {
         .map(_usersFromSnapshot);
   }
 
-  Future<List<Users>> getAllUsers() async {
-    final snapshotUsersTable = await firestore.collection("UsersTable").get();
-    List<Users> output = [];
-    snapshotUsersTable.docs.forEach((element) {
-      Users u = Users(uid: element.id, nickName: element.get("nickName"));
-      output.add(u);
+  Stream<List<Users>> getAllUsers() {
+    return firestore.collection("UsersTable").snapshots().map((snapshot) {
+      List<Users> output = [];
+      snapshot.docs.forEach((element) {
+        Users u = Users(uid: element.id, nickName: element.get("nickName"));
+        output.add(u);
+      });
+      output.removeWhere((element) => element.uid == uid);
+      return output;
     });
-    output.removeWhere((element) => element.uid == uid);
-    return output;
   }
 
   Future sendMessage(String receiver, String message) async {
@@ -55,45 +56,75 @@ class Database {
     return firestore.collection("ChatTable").add(chat.toMap());
   }
 
-  Future<List<Chat>> getMessages(String sender, String receiver) async {
-    final snapshotChatTable = await firestore.collection("ChatTable").get();
-    List<Chat> output = [];
-    snapshotChatTable.docs.forEach((element) {
-      Chat c = Chat(
-          senderUid: element.get("senderUid"),
-          receiverUid: element.get("receiverUid"),
-          message: element.get("message"),
-          timestamp: element.get("timestamp"));
-      output.add(c);
+  Stream<List<Chat>> getMessages(String sender, String receiver) {
+    return firestore.collection("ChatTable").snapshots().map((snapshot) {
+      List<Chat> output = [];
+      snapshot.docs.forEach((element) {
+        Chat c = Chat(
+            senderUid: element.get("senderUid"),
+            receiverUid: element.get("receiverUid"),
+            message: element.get("message"),
+            timestamp: element.get("timestamp"));
+        output.add(c);
+      });
+      output.removeWhere((element) {
+        return !((sender == element.senderUid ||
+                sender == element.receiverUid) &&
+            (receiver == element.senderUid || receiver == element.receiverUid));
+      });
+      output.sort(((a, b) => b.timestamp.compareTo(a.timestamp)));
+      return output;
     });
-    output.removeWhere((element) {
-      return !((sender == element.senderUid || sender == element.receiverUid) &&
-          (receiver == element.senderUid || receiver == element.receiverUid));
-    });
-    output.sort(((a, b) => a.timestamp.compareTo(b.timestamp)));
-    return output;
   }
 
-  Future<List<Users>> getUsersWhoChatWithUid() async {
-    final snapshotChatTable = await firestore.collection("ChatTable").get();
-    List<String> uids = [];
-    snapshotChatTable.docs.forEach((element) async {
-      if (element.get("senderUid") == uid) {
-        String otherUid = element.get("receiverUid");
-        uids.add(otherUid);
+  // Stream<List<Users>> getUsersWhoChatWithUid() {
+  //   return firestore.collection("ChatTable").snapshots().map((snapshot) {
+  //     List<String> uids = [];
+  //     snapshot.docs.forEach((element) async {
+  //       if (element.get("senderUid") == uid) {
+  //         String otherUid = element.get("receiverUid");
+  //         uids.add(otherUid);
+  //       }
+  //       if (element.get("receiverUid") == uid) {
+  //         String otherUid = element.get("senderUid");
+  //         uids.add(otherUid);
+  //       }
+  //     });
+  //     uids = uids.toSet().toList();
+  //     List<Users> output = [];
+  //     String _nickName='';
+  //     for (var element in uids) {
+  //       Users u = Users(uid: element, nickName: getNickNameFromUid(element));
+  //       output.add(u);
+  //     }
+  //     return output;
+  //   });
+  // }
+
+  Stream<List<Users>> getUsersWhoChatWithUid() async* {
+    yield* firestore
+        .collection("ChatTable")
+        .snapshots()
+        .asyncMap((snapshot) async {
+      List<String> uids = [];
+      await Future.forEach(snapshot.docs, (element) async {
+        if (element.get("senderUid") == uid) {
+          String otherUid = element.get("receiverUid");
+          uids.add(otherUid);
+        }
+        if (element.get("receiverUid") == uid) {
+          String otherUid = element.get("senderUid");
+          uids.add(otherUid);
+        }
+      });
+      uids = uids.toSet().toList();
+      List<Users> output = [];
+      for (var element in uids) {
+        Users u =
+            Users(uid: element, nickName: await getNickNameFromUid(element));
+        output.add(u);
       }
-      if (element.get("receiverUid") == uid) {
-        String otherUid = element.get("senderUid");
-        uids.add(otherUid);
-      }
+      return output;
     });
-    uids = uids.toSet().toList();
-    List<Users> output = [];
-    for (var element in uids) {
-      Users u =
-          Users(uid: element, nickName: await getNickNameFromUid(element));
-      output.add(u);
-    }
-    return output;
   }
 }

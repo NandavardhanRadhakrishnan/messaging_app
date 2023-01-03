@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:messaging_app/Shared/loadingScreen.dart';
 import 'package:messaging_app/models/chatModel.dart';
 import 'package:messaging_app/models/userModel.dart';
@@ -29,20 +32,36 @@ class _ChatUserState extends State<ChatUser> {
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
         title: Text(widget.otherUser.nickName!),
+        // actions: [
+        //   TextButton(
+        //     child: Text("refresh"),
+        //     onPressed: (() {
+        //       setState(() {
+        //         refresh = !refresh;
+        //       });
+        //     }),
+        //   )
+        // ],
       ),
       backgroundColor: Colors.grey[850],
       body: Column(
         children: [
           SizedBox(height: 20),
 
-          //TODO resize when keyboard is open
-          FutureBuilder(
-            future: db.getMessages(widget.user.uid, widget.otherUser.uid),
+          StreamBuilder(
+            stream: db.getMessages(widget.user.uid, widget.otherUser.uid),
             builder: (context, snapshot) {
+              // Timer.periodic(Duration(seconds: 10), (timer) {
+              //   setState(() {
+              //     setState(() {
+              //       refresh = !refresh;
+              //     });
+              //   });
+              // });
               if (snapshot.hasData) {
-                return Container(
-                  height: MediaQuery.of(context).size.height - 180,
+                return Expanded(
                   child: ListView.builder(
+                    reverse: true,
                     itemCount: snapshot.data?.length,
                     itemBuilder: (_, int position) {
                       final item = snapshot.data![position];
@@ -53,9 +72,7 @@ class _ChatUserState extends State<ChatUser> {
                   ),
                 );
               } else {
-                return Container(
-                    height: MediaQuery.of(context).size.height - 160,
-                    child: Loading());
+                return Expanded(child: Loading());
               }
             },
           ),
@@ -64,6 +81,8 @@ class _ChatUserState extends State<ChatUser> {
           ),
           //TODO style this message bar properly
           MessageBar(
+            messageBarColor: Colors.grey[900]!,
+            sendButtonColor: Colors.white,
             onSend: (val) {
               setState(() {
                 refresh = !refresh;

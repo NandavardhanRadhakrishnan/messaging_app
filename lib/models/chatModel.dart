@@ -7,15 +7,18 @@ class Chat {
   String message;
   int timestamp;
 
-  Chat({required this.senderUid,required this.receiverUid,required this.message,required this.timestamp});
+  Chat(
+      {required this.senderUid,
+      required this.receiverUid,
+      required this.message,
+      required this.timestamp});
 
-  Map<String,dynamic> toMap(){
-    return{
-      'senderUid':senderUid,
-      'receiverUid':receiverUid,
-      'message':message,
-      'timestamp':timestamp
+  Map<String, dynamic> toMap() {
+    return {
+      'senderUid': senderUid,
+      'receiverUid': receiverUid,
+      'message': message,
+      'timestamp': timestamp
     };
   }
-
 }
